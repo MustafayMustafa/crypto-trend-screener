@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
+from db import initalise_db, insert_coin_data
+
 load_dotenv()
 
 KEY = os.getenv("COINMARKETCAP_API")
@@ -44,3 +46,16 @@ def get_coins(minimum_threshold, max_threshold):
 
 
 data = get_coins(minimum_threshold=10000000, max_threshold=100000000)
+
+cursor, conn = initalise_db()
+
+for coin in data["data"]:
+    name = coin["name"]
+    ticker = coin["symbol"]
+    market_cap = coin["quote"]["USD"]["market_cap"]
+    last_updated = coin["quote"]["USD"]["last_updated"]
+
+    insert_coin_data(name, ticker, market_cap, last_updated, cursor)
+    conn.commit()
+
+conn.close()
