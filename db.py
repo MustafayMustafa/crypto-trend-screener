@@ -36,4 +36,10 @@ def insert_coin_data(name, ticker, market_cap, last_updated, cursor):
     )
 
 
+def get_coins(cursor):
+    cursor.execute("select name, ticker from coins")
+    coins = cursor.fetchall()
+    return coins
+
+
 cursor, conn = initalise_db()
